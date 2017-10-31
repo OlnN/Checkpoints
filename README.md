@@ -1,2 +1,2 @@
 # Checkpoints
-Synchronization primitive for C++
+Synchronization primitive checkpoints.

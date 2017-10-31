@@ -1,0 +1,46 @@
+Checkpoint synchronization primitive.
+
+Checkpoint is a point in program where thread awaits until some condition will hold.
+Checkpoints are implemented through method pass(checkp_get(), checkp_set(), name) of global object of type 'checkpoint'. 
+Threads wait till checkp_get() condition will hold and then execute checkp_set() function. 
+Depending on checkp_get() and checkp_set() arguments to pass(), checkpoints can implement 
+any kind of synchronization, and might be used instead of mutexes, rwlocks or condition variables. 
+Method pass() has following arguments:
+- checkp_get() function is a condition that checks values of flags. If checkp_get() returns zero, 
+thread will sleep in kernel until condition will hold and checkp_get() return non-zero.
+- checkp_set() function is to update values of flags. Function checkp_set() returns integer value
+that can be used by calling code. 
+- optional string 'name' to identify checkpoint for debugging.
+Execution of program with checkpoints depends on values of flags for checkp_get(). These flags must be
+updated in checkp_set(). After each checkp_set() call, all awaiting checkp_get() are checked 
+to resume execution of awaiting threads. Functions checkp_get() and checkp_set() are executed 
+under global checkpoints lock.
+
+Checkpoint interface:
+typedef std::function<int ()> checkp_get;
+typedef std::function<int ()> checkp_set;
+class checkpoint {
+public:
+	int pass(checkp_get get, checkp_set set, std::string name = "default");
+	int try_pass(checkp_get get, checkp_set set);
+	std::string print();
+};
+
+For example:
+   int shared = 0;
+   int locked = 0;
+...
+        chkp.pass([]()->int {return !locked;}, []()->int {locked = 1; return 0;});
+	shared++;
+        chkp.pass([]()->int {return locked;}, []()->int {locked = 0; return 0;});
+Here checkpoint synchronizes access to shared data
+
+Other checkpoint methods:
+try_pass() returns -1 if checkpoint can't be passes instantly, or passes checkpoint and returns set value.
+print() returns names of all currently awaiting checkpoints for debugging purposes.
+
+Examples are in the file test.cpp:
+test1 is an example of using checkpoints to synchronize access to shared data.
+test2 is an example of using checkpoints to synchronize several writer and reader threads.
+
+O.logN@mail.ru
