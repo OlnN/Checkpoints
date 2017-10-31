@@ -39,8 +39,8 @@ Other checkpoint methods:
 try_pass() returns -1 if checkpoint can't be passes instantly, or passes checkpoint and returns set value.
 print() returns names of all currently awaiting checkpoints for debugging purposes.
 
-Examples are in the file test.cpp:
-test1 is an example of using checkpoints to synchronize access to shared data.
-test2 is an example of using checkpoints to synchronize several writer and reader threads.
+Examples are in the directory test:
+test1.cpp is an example of using checkpoints to synchronize access to shared data.
+test2.cpp is an example of using checkpoints to synchronize several writer and reader threads.
 
 O.logN@mail.ru
