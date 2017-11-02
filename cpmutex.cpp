@@ -10,7 +10,6 @@ void cpmutex::lock()
 	// locking must be done atomically in case other threads are locking mutex at the same time too
 	c = locked.compare_exchange_strong(z, 1); // c == true if exchanged performed, false otherwise
 	while (!c) {
-		// this is executed if mutex was locked(c==false - value of locked was not)
 		// if kernel sees that *locked == 3rd argument(=1) of SYS_futex, then thread is enqueued in wait queue inside kernel
 		// syscall waits on futex until futex called with FUTEX_WAKE
 		// address of "locked" is id of mutex inside SYS_futex
