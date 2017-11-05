@@ -1,4 +1,6 @@
 Checkpoint synchronization primitive.
+Checkpoints can be used as a primitive for any type of synchronization or as a base for implementations 
+of other custom synchronization primitives(rwlocks, semaphores, upgradable_lockables etc).
 
 Checkpoint is a point in program where thread awaits until some condition will hold.
 Checkpoints are implemented through method pass(checkp_get(), checkp_set(), name) of global object of type 'checkpoint'. 
